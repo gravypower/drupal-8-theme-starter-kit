@@ -1,0 +1,22 @@
+{
+  "name": "drupal-8-theme-starter-kit",
+  "description": "",
+  "main": "",
+  "authors": [
+    "Aaron Job <aaron@gravypower.net>"
+  ],
+  "license": "MIT",
+  "moduleType": [],
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "normalize-scss": "normalize.scss#^4.0.3",
+    "material-design-lite": "^1.1.1"
+  }
+}

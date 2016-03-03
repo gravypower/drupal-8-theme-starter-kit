@@ -1,0 +1,10 @@
+{
+    "head_title": "Gulp and Twig",
+    "placeholder_token" :"SomePlaceholderToken",
+    "benefits": [
+        "Fast",
+        "Flexible",
+        "Secure"
+    ],
+    "html_attributes":"test"
+}

@@ -1,0 +1,8 @@
+.scss-lint.yml
+.jshintrc
+.bowerrc
+.DS_Store
+node_modules
+.tmp
+.sass-cache
+bower_components
