@@ -11,12 +11,11 @@ import gulpLoadPlugins from 'gulp-load-plugins';
 import {output as pagespeed} from 'psi';
 import pkg from './package.json';
 import sprity from 'sprity';
-import twig from 'gulp-twig';
-import data from 'gulp-data';
+
 import rename from 'gulp-rename';
 import newer from 'gulp-newer';
 import gutil from 'gulp-util';
-import watch from 'gulp-watch';
+
 import svgSprite from 'gulp-svg-sprite';
 
 const $ = gulpLoadPlugins();
@@ -41,8 +40,15 @@ const appConfig = {
   };
 
 
-var filters = require(appConfig.twig + 'filters.js');
 
+var watches = require('./gulp_libs/watch_tasks.bable.js');
+watches.setup(gulp, appConfig);
+
+var twig = require('./gulp_libs/twig_tasks.bable.js');
+twig.setup(gulp, appConfig);
+
+var copy = require('./gulp_libs/copy_tasks.bable.js');
+copy.setup(gulp, appConfig);
 
 //------------------tasks----------------------------//
 gulp.task('test', ['clean'], cb =>
@@ -87,151 +93,14 @@ gulp.task('serve', ['scripts', 'sprites', 'svg-sprites', 'styles','twig', 'drupa
 
 //----------------------------------------------//
 
-gulp.task('drupal-watch', function() {
-  var watchLocation = appConfig.drupal + '**/*';
-  watch(watchLocation)
-  .on('change', function(ev) {
-    gulp.start('drupal-copy');
-  })
-  .on('unlink', function(ev) {
-    var fileToDelete = ('./' + path.relative('./', ev)).replace(appConfig.drupal, appConfig.www);
-    del(fileToDelete,  {force: true}).then(paths => {
-      gutil.log('deleted: ', paths.join(', '));
-    });
-  });
-});
 
-gulp.task('font-watch', function() {
-  var watchLocation = appConfig.drupal + 'styles/fonts/**/*'
-  gutil.log('watching ' + watchLocation);
-  watch(watchLocation)
-  .on('change', function(ev) {
-    gulp.start('font-copy');
-    gutil.log(ev);
-  })
- .on('unlink', function(ev) {
-    var fileToDelete = ('./' + path.relative('./', ev)).replace(appConfig.drupal, appConfig.www);
-    del(fileToDelete,  {force: true}).then(paths => {
-      gutil.log('deleted: ', paths.join(', '));
-    });
-  });
-});
 
-gulp.task('image-watch', function() {
-  var watchLocation = appConfig.drupal + 'styles/images/**/*'
-  gutil.log('watching ' + watchLocation);
-  watch(watchLocation)
-  .on('change', function(ev) {
-    gulp.start('font-copy');
-    gutil.log(ev);
-  })
- .on('unlink', function(ev) {
-    var fileToDelete = ('./' + path.relative('./', ev)).replace(appConfig.drupal, appConfig.www);
-    del(fileToDelete,  {force: true}).then(paths => {
-      gutil.log('deleted: ', paths.join(', '));
-    });
-  });
-});
-
-gulp.task('template-watch', function() {
-  var watchLocation = appConfig.drupal + 'templates/**/*'
-  gutil.log('watching ' + watchLocation);
-  watch(watchLocation)
-  .on('change', function(ev) {
-    gulp.start('template-copy');
-    gutil.log(ev);
-  })
- .on('unlink', function(ev) {
-    var fileToDelete = ('./' + path.relative('./', ev)).replace(appConfig.drupal, appConfig.www);
-    del(fileToDelete,  {force: true}).then(paths => {
-      gutil.log('deleted: ', paths.join(', '));
-    });
-  });
-});
-
-gulp.task('drupal-copy', [], () => {  
-  var from = appConfig.drupal + '**/*'
-  var to = appConfig.www;
-  gulp.src(from)
-    .pipe(gulp.dest(to))
-    .on('end', () => {
-      gutil.log('Finshed syncing from ' + from + ' to ' + to);
-    });
-});
-
-gulp.task('font-copy', [], () => {  
-  var from = appConfig.staticBuild + 'styles/fonts/**/*';
-  var to = appConfig.theme + 'css/fonts/';
-  gulp.src(from)
-    .pipe(gulp.dest(to))
-    .on('end', () => {
-      gutil.log('Finshed syncing from ' + from + ' to ' + to);
-    });
-});
-
-gulp.task('image-copy', [], () => {  
-  var from = appConfig.staticBuild + 'styles/images/**/*';
-  var to = appConfig.theme + 'css/images/';
-  gulp.src(from)
-
-    .pipe(gulp.dest(to))
-    .on('end', () => {
-      gutil.log('Finshed syncing from ' + from + ' to ' + to);
-    });
-});
-
-gulp.task('template-copy', [], () => {  
-  var from = appConfig.twig + 'templates/**/*';
-  var to = appConfig.theme + 'templates/';
-  gulp.src(from)
-    .pipe(gulp.dest(to))
-    .on('end', () => {
-      gutil.log('Finshed syncing from ' + from + ' to ' + to);
-    });
-});
 
 
 // Clean output directory
 gulp.task('clean', cb => del([appConfig.tmp], {dot: true}));
 
-//twig
 
-var getJsonAsync = function (p, cb) {
-    p = path.dirname(p) + '/data/' + path.basename(p) + '.json';
-    fs.stat(p, function (err) {
-        if (err) {
-            cb(undefined, {});
-        } else {
-            fs.readFile(p, 'utf8', function (errRead, data) {
-                if (errRead) {
-                    cb(undefined, {});
-                } else {
-                  try {
-                    var jsData = JSON.parse(data);
-                    cb(undefined, jsData);
-                  } catch (ex) {
-                      gutil.log(gutil.colors.bgRed(ex + " in " + p));
-                      cb(undefined, {});
-                  }
-                }
-            })
-        }
-    })
-};
-
-gulp.task('twig', function() {
-  return gulp.src([
-      appConfig.twig + '**/*.twig',
-      "!" + appConfig.twig + 'templates/**/*'
-    ])
-  .pipe($.data(function(file, cb) {
-        return getJsonAsync(file.path, cb);
-      }))
-    .pipe($.twig({
-        filters: filters.list
-      }))
-    .pipe(gulp.dest(appConfig.tmp));
-  });
 
 
 // Lint JavaScript
