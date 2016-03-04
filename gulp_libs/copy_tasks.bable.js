@@ -1,8 +1,9 @@
 import gutil from 'gulp-util';
+import gulp from 'gulp';
 
 module.exports = {
 
-	setup: function(gulp, appConfig)
+	setup: function(appConfig)
 	{
 		gulp.task('drupal-copy', [], () => {  
 		  var from = appConfig.drupal + '**/*'

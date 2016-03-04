@@ -1,10 +1,11 @@
 'use strict';
 
+import gulp from 'gulp';
 import watch from 'gulp-watch';
 import gutil from 'gulp-util';
 
 module.exports = {
-  setup: function(gulp, appConfig)
+  setup: function(appConfig)
   {
     gulp.task('drupal-watch', function() {
       var watchLocation = appConfig.drupal + '**/*';

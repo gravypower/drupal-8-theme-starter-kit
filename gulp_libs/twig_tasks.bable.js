@@ -1,21 +1,22 @@
 'use strict';
+
+import gulp from 'gulp';
 import twig from 'gulp-twig';
 import data from 'gulp-data';
 import path from 'path';
 import gutil from 'gulp-util';
 import fs from 'fs';
+import drupal_twig_filters from './drupal_twig_filters.js'
 
 module.exports = {
 
-	setup: function(gulp, appConfig)
+	setup: function(appConfig)
 	{
-		var filters = require('./filters.js');
-
 		gulp.task('twig', function() {
 			return gulp.src([ appConfig.twig + '**/*.twig',"!" + appConfig.twig + 'templates/**/*'])
 			.pipe(data(function(file, cb) {
 				return getJsonAsync(file.path, cb);}))
-			.pipe(twig({filters: filters.list}))
+			.pipe(twig({filters: drupal_twig_filters.list}))
 			.pipe(gulp.dest(appConfig.tmp));
 		});
 	}
